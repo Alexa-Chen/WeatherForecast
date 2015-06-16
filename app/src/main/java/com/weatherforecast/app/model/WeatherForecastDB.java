@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.util.Log;
 
 import com.weatherforecast.app.db.WeatherForecastOpenHelper;
 
@@ -15,26 +17,26 @@ import java.util.List;
  */
 public class WeatherForecastDB {
     /*
-    * Êı¾İ¿âÃû
+    * æ•°æ®åº“å
     * */
 
     public  static  final String DB_NAME = "weather_forecast";
     /*
-    *  Êı¾İ¿â°æ±¾
+    *  æ•°æ®åº“ç‰ˆæœ¬
     * */
     public  static  final  int VERSION = 1;
     private  static  WeatherForecastDB weatherForecastDB;
     private SQLiteDatabase db;
 
     /*
-    *  ½«¹¹Ôì·½·¨Ë½ÓĞ»¯
+    *  å°†æ„é€ æ–¹æ³•ç§æœ‰åŒ–
     * */
     private  WeatherForecastDB(Context context){
         WeatherForecastOpenHelper dbHelper = new WeatherForecastOpenHelper(context,DB_NAME,null,VERSION);
         db = dbHelper.getWritableDatabase();
     }
     /*
-    * »ñÈ¡ WeatherForecastDB ÊµÀı
+    * è·å– WeatherForecastDB å®ä¾‹
     * */
     public  synchronized  static WeatherForecastDB getInstance(Context context) {
         if (weatherForecastDB == null) {
@@ -44,29 +46,31 @@ public class WeatherForecastDB {
     }
 
     /*
-    * ½« province ÊµÀı´æ´¢µ½Êı¾İ¿â
+    * å°† province å®ä¾‹å­˜å‚¨åˆ°æ•°æ®åº“
     * */
     public  void saveProvince(Province province){
-        if(province == null){
-            ContentValues values = new ContentValues();
-            values.put("province_name",province.getProvinceName());
-            values.put("province_code",province.getProvinceName());
-            db.insert("province",null,values);
-        }
+        if(province == null) return;
+        Log.i("saveProvince", province.getProvinceName() + ":" + province.getProvinceCode());
+        ContentValues values = new ContentValues();
+        values.put("province_name",province.getProvinceName());
+        values.put("province_code", province.getProvinceCode());
+        db.insert("province",null,values);
     }
     /*
-    * ´ÓÊı¾İ¿â¶ÁÈ¡È«¹úËùÓĞµÄÊ¡·İĞÅÏ¢
+    * ä»æ•°æ®åº“è¯»å–å…¨å›½æ‰€æœ‰çš„çœä»½ä¿¡æ¯
     * */
 
     public List<Province> loadProvinces(){
         List<Province> list =new ArrayList<Province>();
         Cursor cursor = db.query("province",null,null,null,null,null,null);
+        Log.i("loadProvinces", "count: " + cursor.getCount());
         if(cursor.moveToFirst()){
             do{
                 Province province = new Province();
                 province.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 province.setProvinceName(cursor.getString(cursor.getColumnIndex("province_name")));
                 province.setProvinceCode(cursor.getString(cursor.getColumnIndex("province_code")));
+                Log.i("loadProvinces", province.getProvinceCode() + ":" + province.getProvinceName());
                 list.add(province);
             }  while (cursor.moveToNext());
         }
@@ -74,7 +78,7 @@ public class WeatherForecastDB {
     }
 
     /*
-    *   ½«city ÊµÀı´æ´¢µ½Êı¾İ¿â
+    *   å°†city å®ä¾‹å­˜å‚¨åˆ°æ•°æ®åº“
     * */
 
     public void saveCity(City city){
@@ -88,11 +92,11 @@ public class WeatherForecastDB {
     }
 
     /*
-    * ´ÓÊı¾İ¿â¶ÁÈ¡Ä³Ê¡ÏÂËùÓĞµÄ³ÇÊĞĞÅÏ¢
+    * ä»æ•°æ®åº“è¯»å–æŸçœä¸‹æ‰€æœ‰çš„åŸå¸‚ä¿¡æ¯
     * */
     public List<City> loadCities(int provinceId){
         List<City> list = new ArrayList<City>();
-        Cursor cursor = db.query("City",null,"province_id = ?",new String[]{String.valueOf(provinceId)},null,null,null);
+        Cursor cursor = db.query("City", null, "province_id = ?", new String[]{String.valueOf(provinceId)}, null, null, null);
         if(cursor.moveToFirst()){
             do{
                 City city = new City();
@@ -107,31 +111,36 @@ public class WeatherForecastDB {
     }
 
     /*
-    * ½«county ÊµÀı´æ´¢µ½Êı¾İ¿â
+    * å°†county å®ä¾‹å­˜å‚¨åˆ°æ•°æ®åº“
     * */
     public  void  saveCounty(County county){
-        if(county == null){
-            ContentValues values = new ContentValues();
-            values.put("county_name",county.getCountyName());
-            values.put("county_code",county.getCountyCode());
-            values.put("city_id",county.getCityId());
-            db.insert("County",null,values);
-        }
+        if(county == null) return;
+        ContentValues values = new ContentValues();
+        values.put("county_name",county.getCountyName());
+        values.put("county_code",county.getCountyCode());
+        values.put("city_id",county.getCityId());
+        db.insert("County", null, values);
+        Log.i("saveCounty", county.getCityId() + "/" + county.getCountyCode() + ":" + county.getCountyName() + " Saved");
     }
 
     /*
-    * ´ÓÊı¾İ¿âÖĞ¶ÁÈ¡Ä³³ÇÊĞÏÂËùÓĞÏØµÄĞÅÏ¢
+    * ä»æ•°æ®åº“ä¸­è¯»å–æŸåŸå¸‚ä¸‹æ‰€æœ‰å¿çš„ä¿¡æ¯
     * */
 
     public  List<County> loadCounties(int cityId){
         List<County> list = new ArrayList<County>();
-        Cursor cursor = db.query("County",null,"city_id=?",new String[]{String.valueOf(cityId)},null,null,null);
+        Cursor cursor;
+        try {
+            cursor = db.query("County",null,"city_id=?",new String[]{String.valueOf(cityId)},null,null,null);
+        } catch(SQLiteException e) {
+            return list;
+        }
         if(cursor.moveToFirst()){
             do{
                 County county = new County();
                 county.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
-                county.setCountyCode((cursor.getString(cursor.getColumnIndex("county_code"))));
+                county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
                 county.setCityId(cityId);
                 list.add(county);
             }while (cursor.moveToNext());

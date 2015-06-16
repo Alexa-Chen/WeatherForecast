@@ -10,9 +10,9 @@ import java.net.URL;
  * Created by chenmo on 2015/5/24.
  */
 public class HttpUtil {
-    public  static void sendHttpRequest(final  String address,
-                                        final HttpCallbackListener listener){
-        new Thread(new Runnable() {
+    public  static void sendHttpRequest(final  String address, final HttpCallbackListener listener){
+
+            new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection connection = null;
@@ -30,12 +30,12 @@ public class HttpUtil {
                         response.append(line);
                     }
                     if(listener!=null){
-                        //回调onFinish方法
+                        //鍥炶皟onFinish鏂规硶
                         listener.onFinish(response.toString());
                     }
                 }catch (Exception e){
                     if(listener!=null){
-                        //回调onError方法
+                        //鍥炶皟onError鏂规硶
                         listener.onError(e);
                     }
                 }finally {

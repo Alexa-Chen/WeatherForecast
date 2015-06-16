@@ -2,7 +2,7 @@ package com.weatherforecast.app.model;
 
 /**
  * Created by chenmo on 2015/5/24.
- *  province ΚµΜεΐΰ
+ *  province ε®δ½“η±»
  */
 public class Province {
     private  int id;

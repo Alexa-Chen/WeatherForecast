@@ -9,18 +9,18 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class WeatherForecastOpenHelper  extends SQLiteOpenHelper {
     /*
-    *    ½«Ò»ÏÂÈıÌõ½¨±íÓï¾ä¶¨Òå³É³£Á¿ È»ºóÔÚonCreate()·½·¨ÖĞÈ¥Ö´ĞĞ´´½¨
+    *    å°†ä¸€ä¸‹ä¸‰æ¡å»ºè¡¨è¯­å¥å®šä¹‰æˆå¸¸é‡ ç„¶ååœ¨onCreate()æ–¹æ³•ä¸­å»æ‰§è¡Œåˆ›å»º
     * */
 
     /*
-    * province ±í½¨±íÓï¾ä
+    * province è¡¨å»ºè¡¨è¯­å¥
     * */
     public  static final  String CREATE_PROVINCE ="create table Province("
             + "id integer primary key autoincrement, "
             + "province_name text, "
             + "province_code text)";
     /*
-    *     city±í ½¨±íÓï¾ä
+    *     cityè¡¨ å»ºè¡¨è¯­å¥
     * */
 
     public static  final  String CREATE_CITY = "create table City("
@@ -30,13 +30,13 @@ public class WeatherForecastOpenHelper  extends SQLiteOpenHelper {
             + "province_id integer)";
 
     /*
-    *   Country±í ½¨±íÓï¾ä
+    *   Countryè¡¨ å»ºè¡¨è¯­å¥
     * */
 
-    public  static  final  String CREATE_COUNTRY = "create table Country("
+    public  static  final  String CREATE_COUNTRY = "create table County("
             + "id integer primary key autoincrement, "
-            + "country_name text, "
-            + "country_code text, "
+            + "county_name text, "
+            + "county_code text, "
             + "city_id integer)";
 
 
@@ -47,9 +47,9 @@ public class WeatherForecastOpenHelper  extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL(CREATE_PROVINCE); // ´´½¨province±í
-        db.execSQL(CREATE_CITY);  // ´´½¨ city±í
-        db.execSQL(CREATE_COUNTRY); // ´´½¨ country±í
+        db.execSQL(CREATE_PROVINCE); // åˆ›å»ºprovinceè¡¨
+        db.execSQL(CREATE_CITY);  // åˆ›å»º cityè¡¨
+        db.execSQL(CREATE_COUNTRY); // åˆ›å»º countryè¡¨
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

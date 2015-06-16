@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.weatherforecast.app.model.City;
 import com.weatherforecast.app.model.County;
@@ -23,19 +24,20 @@ import java.util.Locale;
  */
 public class Utility {
     /*
-    * ½âÎöºÍ´¦Àí·şÎñÆ÷·µ»ØµÄÊ¡¼¶Êı¾İ
+    * è§£æå’Œå¤„ç†æœåŠ¡å™¨è¿”å›çš„çœçº§æ•°æ®
     * */
     public synchronized  static  boolean handleProvincesResponse(WeatherForecastDB weatherForecastDB,String response){
         if(!TextUtils.isEmpty(response)){
             String[] allProvinces =response.split(",");
             if(allProvinces!= null && allProvinces.length>0){
                 for(String p: allProvinces){
+                    //Log.i("handleProvincesResponse", "p=" + p);
                     String[] array = p.split("\\|");
                     Province province = new Province();
                     province.setProvinceCode(array[0]);
                     province.setProvinceName(array[1]);
 
-                    // ½«½âÎö³öÀ´µÄÊı¾İ´æ´¢µ½province±í
+                    // å°†è§£æå‡ºæ¥çš„æ•°æ®å­˜å‚¨åˆ°provinceè¡¨
                     weatherForecastDB.saveProvince(province);
                 }
                 return true;
@@ -44,7 +46,7 @@ public class Utility {
         return false;
     }
     /*
-    *   ½âÎöºÍ´¦Àí·şÎñÆ÷·µ»ØµÄÊĞ¼¶Êı¾İ
+    *   è§£æå’Œå¤„ç†æœåŠ¡å™¨è¿”å›çš„å¸‚çº§æ•°æ®
     * */
 
     public static  boolean handleCitiesResponse(WeatherForecastDB weatherForecastDB,String response, int provinceId){
@@ -54,10 +56,11 @@ public class Utility {
                 for(String c: allCities){
                     String[] array = c.split("\\|");
                     City city = new City();
+                    Log.i("handleCitiesResponse", array[0] + ":" + array[1]);
                     city.setCityCode(array[0]);
                     city.setCityName(array[1]);
                     city.setProvinceId(provinceId);
-                    // ½«½âÎö³öÀ´µÄÊı¾İ´æ´¢µ½city±í
+                    // å°†è§£æå‡ºæ¥çš„æ•°æ®å­˜å‚¨åˆ°cityè¡¨
                     weatherForecastDB.saveCity(city);
                 }
                 return  true;
@@ -66,20 +69,21 @@ public class Utility {
         return  false;
     }
     /*
-    * ½âÎöºÍ´¦Àí·şÎñÆ÷·µ»ØÏØ¼¶Êı¾İ
+    * è§£æå’Œå¤„ç†æœåŠ¡å™¨è¿”å›å¿çº§æ•°æ®
     * */
     public  static  boolean handleCountiesResponse(WeatherForecastDB weatherForecastDB,String response,int cityId){
 
         if (!TextUtils.isEmpty(response)){
             String[] allCounties = response.split(",");
-            if (allCounties != null && allCounties.length>0){
+            if (allCounties != null && allCounties.length > 0){
                 for (String c:allCounties){
                     String[] array = c.split("\\|");
+                    Log.i("handleCountiesResponse", array[0] + ":" + array[1]);
                     County county = new County();
                     county.setCountyCode(array[0]);
                     county.setCountyName(array[1]);
                     county.setCityId(cityId);
-                    // ½«½âÎö³öÀ´µÄÊı¾İ´æ´¢µ½County±í
+                    // å°†è§£æå‡ºæ¥çš„æ•°æ®å­˜å‚¨åˆ°Countyè¡¨
                     weatherForecastDB.saveCounty(county);
                 }
                 return  true;
@@ -89,12 +93,13 @@ public class Utility {
     }
 
     /*
-       ½âÎö·şÎñÆ÷·µ»ØµÄJSONÊı¾İ ²¢½«½âÎö³öÀ´µÄÊı¾İ¿â´æ´¢µ½±¾µØ
+       è§£ææœåŠ¡å™¨è¿”å›çš„JSONæ•°æ® å¹¶å°†è§£æå‡ºæ¥çš„æ•°æ®åº“å­˜å‚¨åˆ°æœ¬åœ°
      */
     public static  void handleWeatherResponse(Context context, String response){
         try{
             JSONObject jsonObject = new JSONObject(response);
-            JSONObject weatherInfo = jsonObject.getJSONObject("weatherInfo");
+            Log.d("handleWeatherResponse", response);
+            JSONObject weatherInfo = jsonObject.getJSONObject("weatherinfo");
             String cityName = weatherInfo.getString("city");
             String weatherCode = weatherInfo.getString("cityid");
             String temp1 = weatherInfo.getString("temp1");
@@ -108,13 +113,13 @@ public class Utility {
         }
     }
     /*
-       ½«·şÎñÆ÷·µ»ØµÄËùÓĞÌìÆøĞÅÏ¢´æ´¢µ½SharedPreferencesÎÄ¼şÖĞ
+       å°†æœåŠ¡å™¨è¿”å›çš„æ‰€æœ‰å¤©æ°”ä¿¡æ¯å­˜å‚¨åˆ°SharedPreferencesæ–‡ä»¶ä¸­
      */
 
     public static  void saveWeatherInfo(Context context,String cityName,String weatherCode,
                                         String temp1, String temp2, String weatherDesp,String publishTime){
 
-        SimpleDateFormat sdf  = new SimpleDateFormat("yyyyÄêMÔÂdÈÕ", Locale.CHINA);
+        SimpleDateFormat sdf  = new SimpleDateFormat("yyyyå¹´Mæœˆdæ—¥", Locale.CHINA);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putBoolean("city_selected",true);
         editor.putString("city_name", cityName);
@@ -122,7 +127,7 @@ public class Utility {
         editor.putString("temp1", temp1);
         editor.putString("temp2", temp2);
         editor.putString("weather_desp", weatherDesp);
-        editor.putString("punlish_Time", publishTime);
+        editor.putString("publish_Time", publishTime);
         editor.putString("current_date",sdf.format(new Date()));
         editor.commit();
     }
